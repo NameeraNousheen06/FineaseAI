@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinEase-AI | AI-Powered Financial Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==== PROFESSIONAL FINTECH STYLE ==== */
+        :root {
+            --primary-blue: #1a237e;
+            --dark-blue: #0d1440;
+            --light-blue: #303f9f;
+            --accent-blue: #3d5afe;
+            --success-green: #4caf50;
+            --warning-orange: #ff9800;
+            --error-red: #f44336;
+            --text-light: rgba(255, 255, 255, 0.9);
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --bg-dark: #121a2a;
+            --bg-darker: #0a0f1a;
+            --card-bg: #1e2747;
+        }
+
+        /* ==== BASE STYLES ==== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+        }
+
+        section {
+            padding: 100px 30px;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* ==== HEADER ==== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(26, 35, 126, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* ==== BUTTONS ==== */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--light-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(61, 90, 254, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+        }
+
+        .btn-outline:hover {
+            background: rgba(61, 90, 254, 0.1);
+        }
+
+        /* ==== HERO SECTION ==== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(18, 26, 42, 0.9), rgba(18, 26, 42, 0.9)), 
+                        url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: var(--text-muted);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* ==== PROBLEM SECTION ==== */
+        .problem {
+            background: var(--bg-darker);
+        }
+
+        .problem:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        }
+
+        .problem-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .problem-text h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .problem-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .problem-list li {
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .problem-list li:before {
+            content: '✖';
+            position: absolute;
+            left: 0;
+            color: var(--error-red);
+            font-size: 20px;
+        }
+
+        .problem-stats {
+            background: rgba(61, 90, 254, 0.1);
+            border: 1px solid var(--accent-blue);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .stat-item {
+            margin-bottom: 25px;
+        }
+
+        .stat-item h3 {
+            font-size: 32px;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+        }
+
+        /* ==== SOLUTION SECTION ==== */
+        .solution:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        }
+
+        .section-title {
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .solution-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .solution-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .solution-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+        }
+
+        /* ==== FEATURES SECTION ==== */
+        .features:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+        }
+
+        /* ==== FAQ SECTION ==== */
+        .faq:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-blue);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 20px;
+            background: rgba(61, 90, 254, 0.1);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question h3 {
+            font-size: 18px;
+            color: var(--accent-blue);
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-answer p {
+            padding: 0 0 20px;
+            color: var(--text-muted);
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 0 20px 20px;
+        }
+
+        /* ==== CONTACT SECTION ==== */
+        .contact:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .contact-info div {
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 10px;
+        }
+
+        .contact-info i {
+            font-size: 30px;
+            color: var(--accent-blue);
+            margin-bottom: 15px;
+        }
+
+        /* ==== DASHBOARD ==== */
+        .dashboard {
+            display: none;
+            padding: 120px 30px;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 L0,100 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/></svg>');
+            background-size: 50px 50px;
+            opacity: 0.5;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .dashboard-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-email {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .user-email i {
+            color: var(--accent-blue);
+        }
+
+        .logout-btn {
+            background: var(--error-red);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .dashboard-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(61, 90, 254, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-blue);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        .dashboard-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+        }
+
+        .dashboard-card p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* ==== AUTH MODAL ==== */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .auth-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .auth-container {
+            background: var(--bg-darker);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid var(--accent-blue);
+            overflow: hidden;
+        }
+
+        .auth-header {
+            padding: 20px;
+            background: rgba(61, 90, 254, 0.1);
+            border-bottom: 1px solid var(--accent-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--accent-blue);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            background: rgba(61, 90, 254, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .auth-content {
+            padding: 30px;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent-blue);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(61, 90, 254, 0.1);
+            border: 1px solid var(--accent-blue);
+            border-radius: 5px;
+            color: white;
+            outline: none;
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+        }
+
+        .auth-switch a {
+            color: var(--accent-blue);
+            cursor: pointer;
+        }
+
+        .auth-message {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .auth-message.error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid var(--error-red);
+            color: var(--error-red);
+            display: block;
+        }
+
+        .auth-message.success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid var(--success-green);
+            color: var(--success-green);
+            display: block;
+        }
+
+        /* ==== RESPONSIVE ==== */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+                padding: 15px;
+            }
+            
+            .problem-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .dashboard-features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==== HEADER ==== -->
+    <header>
+        <div class="navbar container">
+            <a href="#" class="logo">
+                <i class="fas fa-robot"></i> FinEase-AI
+            </a>
+            
+            <nav class="nav-links">
+                <a href="#problem">Problem</a>
+                <a href="#solution">Solution</a>
+                <a href="#features">Features</a>
+                <a href="#faq">FAQ</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-outline" id="loginBtn">Login</a>
+                <a href="#" class="btn btn-primary" id="signupBtn">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==== HERO SECTION ==== -->
+    <section class="hero">
+        <div class="hero-content container">
+            <h1>AI-Powered Financial Management for Indian Businesses</h1>
+            <p>Automate your accounting, ensure compliance, and gain actionable insights with our intelligent financial assistant.</p>
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary" id="heroSignupBtn">Get Started</a>
+                <a href="#" class="btn btn-outline">Watch Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==== PROBLEM SECTION ==== -->
+    <section class="problem" id="problem">
+        <div class="container">
+            <div class="problem-content">
+                <div class="problem-text">
+                    <h2>The Financial Challenges Facing Indian Businesses</h2>
+                    <p>Small and medium businesses in India struggle with complex financial management:</p>
+                    <ul class="problem-list">
+                        <li>Manual data entry from unstructured invoices and receipts</li>
+                        <li>Errors in GST/TDS compliance leading to penalties</li>
+                        <li>Difficulty tracking expenses and cash flow in real-time</li>
+                        <li>Lack of financial insights for better decision making</li>
+                        <li>Time-consuming audit preparation and reporting</li>
+                    </ul>
+                </div>
+                
+                <div class="problem-stats">
+                    <div class="stat-item">
+                        <h3>63M+</h3>
+                        <p>MSMEs in India struggling with financial management</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>40%</h3>
+                        <p>Face penalties due to compliance errors</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>3-4×/year</h3>
+                        <p>GST laws change, making manual tracking impossible</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==== SOLUTION SECTION ==== -->
+    <section class="solution" id="solution">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our AI-Powered Solution</h2>
+                <p>FinEase-AI automates your financial workflows and ensures compliance</p>
+            </div>
+            
+            <div class="solution-cards">
+                <div class="solution-card">
+                    <h3>Smart Document Processing</h3>
+                    <p>Automatically extracts data from invoices, receipts, and bills with 99% accuracy using advanced OCR and AI.</p>
+                </div>
+                <div class="solution-card">
+                    <h3>Real-Time Compliance</h3>
+                    <p>Stay updated with the latest GST/TDS regulations and get alerts for upcoming filings and changes.</p>
+                </div>
+                <div class="solution-card">
+                    <h3>Automated Reporting</h3>
+                    <p>Generate financial statements, tax filings, and audit reports with a single click.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==== FEATURES SECTION ==== -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Key Features</h2>
+                <p>Everything you need to streamline your financial operations</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3>Smart Ledger</h3>
+                    <p>Upload and organize all financial documents with automatic data extraction and categorization.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search-dollar"></i>
+                    </div>
+                    <h3>Anomaly Detection</h3>
+                    <p>Automatically flags errors in calculations, duplicate entries, and suspicious transactions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <h3>Compliance Center</h3>
+                    <p>Track all compliance requirements and deadlines with automated reminders and filings.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Financial Insights</h3>
+                    <p>Get AI-powered recommendations to optimize cash flow, reduce costs, and improve profitability.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Smart Alerts</h3>
+                    <p>Never miss important deadlines with automated notifications for payments, filings, and renewals.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <h3>AI Assistant</h3>
+                    <p>Get instant answers to your financial questions with our conversational AI assistant.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==== FAQ SECTION ==== -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="section-title">
+                <h2>Frequently Asked Questions</h2>
+                <p>Common questions about FinEase-AI</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>How does FinEase-AI handle different document formats?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Our AI uses advanced OCR and machine learning to extract data from PDFs, scanned images, and even photos of receipts. It understands various layouts and extracts financial data with high accuracy.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Is my financial data secure?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! We use bank-grade 256-bit encryption for all data. Your information is never shared without consent, and we comply with all data protection regulations.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Can it integrate with my existing accounting software?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Absolutely. FinEase-AI integrates with Tally, QuickBooks, Zoho Books, and other popular accounting platforms for seamless data synchronization.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==== CONTACT SECTION ==== -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Contact Us</h2>
+                <p>Get in touch with our team</p>
+            </div>
+            
+            <div class="contact-info">
+                <div>
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email</h3>
+                    <a href="mailto:support@fineease-ai.com">support@fineease-ai.com</a>
+                </div>
+                <div>
+                    <i class="fas fa-phone"></i>
+                    <h3>Phone</h3>
+                    <a href="tel:+919876543210">+91 98765 43210</a>
+                </div>
+                <div>
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Office</h3>
+                    <p>Bangalore, India</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==== DASHBOARD (Hidden until login) ==== -->
+    <section class="dashboard" id="dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Welcome to FinEase-AI</h1>
+                <p>Your Financial Command Center</p>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-email">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="userEmail">user@example.com</span>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+            
+            <div class="dashboard-features">
+                <div class="dashboard-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Smart Ledger</h3>
+                    <p>Upload and organize all your financial documents. Generate instant summaries and reports.</p>
+                    <a href="http://127.0.0.1:5500/journal.html" class="btn btn-primary">Open Ledger</a>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search-dollar"></i>
+                    </div>
+                    <h3>Anomaly Detection</h3>
+                    <p>Identify errors, duplicates, and inconsistencies in your financial data.</p>
+                    <a href="https://anomalydetectorr.streamlit.app/" target="_blank" class="btn btn-primary">Detect Issues</a>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <h3>Compliance Center</h3>
+                    <p>Track upcoming filings and ensure you meet all regulatory requirements.</p>
+                    <a href="#" class="btn btn-primary">View Compliance</a>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Audit Reports</h3>
+                    <p>Based on our inputs, make an Audit Report before finalising one.</p>
+                    <a href="https://auditreport.streamlit.app/" target="_blank" class="btn btn-primary">Generate Audit Report</a>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Income Tax Return</h3>
+                    <p>Generate and help in filing an Income Tax Return</p>
+                    <a href="https://incometaxreturn.streamlit.app/" target="_blank" class="btn btn-primary">Generate Reports</a>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3>Income Tax Credit</h3>
+                    <p>User manually log transactions and see their net GST liability after ITC claims.</p>
+                    <a href="https://itcredit.tiiny.site/" target="_blank" class="btn btn-primary">Plan Taxes</a>
+                </div>
+
+                <!-- New Alert System Card -->
+                <div class="dashboard-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>GST Alert System</h3>
+                    <p>Monitor GST compliance deadlines, rate changes, and filing requirements with real-time alerts.</p>
+                    <a href="https://gstalerts.streamlit.app/" target="_blank" class="btn btn-primary">View GST Alerts</a>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>FinBot</h3>
+                    <p>Our Chatbot that works towards making finance easier.</p>
+                    <a href="https://aiassistance.streamlit.app/" target="_blank" class="btn btn-primary">Learn Finance</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==== AUTH MODAL ==== -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h2 id="authModalTitle">Login</h2>
+                <button class="auth-close" id="authClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="loginTab">Login</div>
+                <div class="auth-tab" id="signupTab">Sign Up</div>
+            </div>
+            
+            <div class="auth-content">
+                <div class="auth-message" id="authMessage"></div>
+                
+                <form class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="auth-submit">Login</button>
+                    <div class="auth-switch">
+                        Don't have an account? <a id="switchToSignup">Sign up</a>
+                    </div>
+                </form>
+                
+                <form class="auth-form" id="signupForm">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" required>
+                    </div>
+                    <button type="submit" class="auth-submit">Create Account</button>
+                    <div class="auth-switch">
+                        Already have an account? <a id="switchToLogin">Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auth functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const user = localStorage.getItem('currentUser');
+            if (user) {
+                showDashboard(JSON.parse(user));
+            }
+            
+            // Auth modal toggle
+            const authModal = document.getElementById('authModal');
+            const loginBtn = document.getElementById('loginBtn');
+            const signupBtn = document.getElementById('signupBtn');
+            const heroSignupBtn = document.getElementById('heroSignupBtn');
+            const authClose = document.getElementById('authClose');
+            
+            loginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                authModal.classList.add('active');
+            });
+            
+            signupBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                authModal.classList.add('active');
+                document.getElementById('signupTab').click();
+            });
+            
+            heroSignupBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                authModal.classList.add('active');
+                document.getElementById('signupTab').click();
+            });
+            
+            authClose.addEventListener('click', function() {
+                authModal.classList.remove('active');
+            });
+            
+            // Tab switching
+            const loginTab = document.getElementById('loginTab');
+            const signupTab = document.getElementById('signupTab');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const switchToSignup = document.getElementById('switchToSignup');
+            const switchToLogin = document.getElementById('switchToLogin');
+            
+            loginTab.addEventListener('click', function() {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.add('active');
+                signupForm.classList.remove('active');
+                document.getElementById('authModalTitle').textContent = 'Login';
+            });
+            
+            signupTab.addEventListener('click', function() {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.add('active');
+                loginForm.classList.remove('active');
+                document.getElementById('authModalTitle').textContent = 'Sign Up';
+            });
+            
+            switchToSignup.addEventListener('click', function(e) {
+                e.preventDefault();
+                signupTab.click();
+            });
+            
+            switchToLogin.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginTab.click();
+            });
+            
+            // Form submission
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // Simple validation
+                if (email && password) {
+                    const user = {
+                        email: email,
+                        name: "Demo User"
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    authModal.classList.remove('active');
+                    showDashboard(user);
+                } else {
+                    document.getElementById('authMessage').textContent = 'Please enter both email and password';
+                    document.getElementById('authMessage').className = 'auth-message error';
+                }
+            });
+            
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('signupName').value;
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+                const confirmPassword = document.getElementById('signupConfirmPassword').value;
+                
+                // Simple validation
+                if (password !== confirmPassword) {
+                    document.getElementById('authMessage').textContent = 'Passwords do not match';
+                    document.getElementById('authMessage').className = 'auth-message error';
+                    return;
+                }
+                
+                if (name && email && password) {
+                    const user = {
+                        email: email,
+                        name: name
+                    };
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    authModal.classList.remove('active');
+                    showDashboard(user);
+                } else {
+                    document.getElementById('authMessage').textContent = 'Please fill all fields';
+                    document.getElementById('authMessage').className = 'auth-message error';
+                }
+            });
+            
+            // FAQ toggle
+            document.querySelectorAll('.faq-question').forEach(question => {
+                question.addEventListener('click', () => {
+                    const item = question.parentElement;
+                    item.classList.toggle('active');
+                });
+            });
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('currentUser');
+                window.location.reload();
+            });
+        });
+
+        function showDashboard(user) {
+            // Hide all sections
+            document.querySelectorAll('section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show dashboard
+            const dashboard = document.getElementById('dashboard');
+            dashboard.style.display = 'block';
+            document.getElementById('userEmail').textContent = user.email;
+            
+            // Hide header
+            document.querySelector('header').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
