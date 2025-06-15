@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinEase-AI: Financial Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --income-color: #4cc9f0;
+            --expense-color: #f72585;
+            --sidebar-width: 280px;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            overflow-x: hidden;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: var(--sidebar-width);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .main-content {
+            padding: 20px;
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s;
+            min-height: 100vh;
+            width: calc(100% - var(--sidebar-width));
+        }
+        
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: visible;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.85);
+            border-radius: 8px;
+            margin: 5px 10px;
+            padding: 12px 15px;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255,255,255,0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            height: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--dark-color);
+        }
+        
+        .income-metric {
+            border-left: 5px solid var(--income-color);
+        }
+        
+        .expense-metric {
+            border-left: 5px solid var(--expense-color);
+        }
+        
+        .net-metric {
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .tab-content {
+            padding: 20px 0;
+            min-height: 300px;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+            border-radius: 8px 8px 0 0;
+            padding: 12px 20px;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 3px solid var(--primary-color);
+            background-color: transparent;
+        }
+        
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: rgba(245, 247, 250, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: scale(1.01);
+        }
+        
+        .file-upload i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .spinner-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+        }
+        
+        .spinner {
+            width: 3.5rem;
+            height: 3.5rem;
+            color: var(--primary-color);
+        }
+        
+        .alert {
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .transaction-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+        }
+        
+        .transaction-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+        }
+        
+        .transaction-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .transaction-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .income-row {
+            background-color: rgba(76, 201, 240, 0.05);
+        }
+        
+        .expense-row {
+            background-color: rgba(247, 37, 133, 0.05);
+        }
+        
+        .logo {
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo h3 {
+            font-weight: 700;
+            margin-top: 15px;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .logo i {
+            font-size: 2.8rem;
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            width: 70px;
+            height: 70px;
+            line-height: 70px;
+            border-radius: 50%;
+        }
+        
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        
+        .top-transaction-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+        
+        .top-transaction-card h5 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .top-transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+        
+        .top-transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .top-transaction-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .top-transaction-amount {
+            font-weight: 600;
+        }
+        
+        .income-amount {
+            color: var(--income-color);
+        }
+        
+        .expense-amount {
+            color: var(--expense-color);
+        }
+        
+        .toggle-sidebar {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Animation for success message */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .transaction-success {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+        
+        /* Responsive improvements */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 250px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .main-content.active {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+            
+            .toggle-sidebar {
+                display: block;
+            }
+            
+            .nav-link {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.25rem;
+            }
+            
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .transaction-table {
+                min-width: 600px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .card-body {
+                padding: 15px;
+            }
+            
+            .row {
+                margin-left: -5px;
+                margin-right: -5px;
+            }
+            
+            [class*="col-"] {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+            
+            .file-upload {
+                padding: 20px;
+            }
+        }
+        
+        /* Fix for chart canvas elements */
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+        
+        /* Button group improvements */
+        .btn-group {
+            margin-bottom: 20px;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+        }
+        
+        /* Modal improvements */
+        .modal-body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-sidebar" id="toggleSidebar">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="d-flex">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h3>FinEase-AI</h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-section="add-transaction">
+                        <i class="fas fa-plus-circle"></i> Add Transaction
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="view-transactions">
+                        <i class="fas fa-list"></i> View Transactions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="financial-reports">
+                        <i class="fas fa-chart-pie"></i> Financial Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content" id="mainContent">
+            <!-- Add Transaction Section -->
+            <div id="add-transaction" class="content-section">
+                <h2 class="section-title"><i class="fas fa-plus-circle"></i>Add New Transaction</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Transaction Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label class="form-label">Select input method:</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="inputMethod" id="manualEntry" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary" for="manualEntry">Manual Entry</label>
+                                
+                                <input type="radio" class="btn-check" name="inputMethod" id="imageUpload" autocomplete="off">
+                                <label class="btn btn-outline-primary" for="imageUpload">Image Upload</label>
+                                
+                                <input type="radio" class="btn-check" name="inputMethod" id="pdfUpload" autocomplete="off">
+                                <label class="btn btn-outline-primary" for="pdfUpload">PDF Upload</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Manual Entry Form -->
+                        <div id="manualEntryForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Transaction Type:</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="transactionType" id="incomeType" value="Income" checked>
+                                            <label class="form-check-label" for="incomeType">Income</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="transactionType" id="expenseType" value="Expense">
+                                            <label class="form-check-label" for="expenseType">Expense</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="transactionId" class="form-label">Transaction ID:</label>
+                                        <input type="text" class="form-control" id="transactionId">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="transactionDate" class="form-label">Date:</label>
+                                        <input type="date" class="form-control" id="transactionDate">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="vendorName" class="form-label">Vendor/Client Name:</label>
+                                        <input type="text" class="form-control" id="vendorName">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="amount" class="form-label">Amount (₹):</label>
+                                        <input type="number" class="form-control" id="amount" min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="gstAmount" class="form-label">GST Amount (₹):</label>
+                                        <input type="number" class="form-control" id="gstAmount" min="0" step="0.01">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="category" class="form-label">Category:</label>
+                                        <select class="form-select" id="category">
+                                            <option value="Sales">Sales</option>
+                                            <option value="Services">Services</option>
+                                            <option value="Materials">Materials</option>
+                                            <option value="Utilities">Utilities</option>
+                                            <option value="Rent">Rent</option>
+                                            <option value="Equipment">Equipment</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="notes" class="form-label">Notes:</label>
+                                        <textarea class="form-control" id="notes" rows="3"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Image Upload Form -->
+                        <div id="imageUploadForm" style="display: none;">
+                            <div class="file-upload mb-3">
+                                <input type="file" id="imageFile" accept="image/*" style="display: none;">
+                                <label for="imageFile" class="d-block">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <h5>Upload Receipt/Invoice Image</h5>
+                                    <p class="text-muted">JPG, JPEG, PNG files only</p>
+                                </label>
+                            </div>
+                            
+                            <div id="imageProcessing" style="display: none;">
+                                <div class="spinner-container">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Extracted Text:</label>
+                                    <textarea class="form-control" id="extractedTextImage" rows="5" readonly></textarea>
+                                </div>
+                                <div class="alert alert-warning">
+                                    Please manually confirm extracted data
+                                </div>
+                                
+                                <!-- Transaction fields for confirmation -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Transaction Type:</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="ocrTransactionType" id="ocrIncomeType" value="Income" checked>
+                                                <label class="form-check-label" for="ocrIncomeType">Income</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="ocrTransactionType" id="ocrExpenseType" value="Expense">
+                                                <label class="form-check-label" for="ocrExpenseType">Expense</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="ocrTransactionId" class="form-label">Transaction ID:</label>
+                                            <input type="text" class="form-control" id="ocrTransactionId">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="ocrTransactionDate" class="form-label">Date:</label>
+                                            <input type="date" class="form-control" id="ocrTransactionDate">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="ocrVendorName" class="form-label">Vendor/Client Name:</label>
+                                            <input type="text" class="form-control" id="ocrVendorName">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="ocrAmount" class="form-label">Amount (₹):</label>
+                                            <input type="number" class="form-control" id="ocrAmount" min="0" step="0.01">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="ocrGstAmount" class="form-label">GST Amount (₹):</label>
+                                            <input type="number" class="form-control" id="ocrGstAmount" min="0" step="0.01">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="ocrCategory" class="form-label">Category:</label>
+                                            <select class="form-select" id="ocrCategory">
+                                                <option value="Sales">Sales</option>
+                                                <option value="Services">Services</option>
+                                                <option value="Materials">Materials</option>
+                                                <option value="Utilities">Utilities</option>
+                                                <option value="Rent">Rent</option>
+                                                <option value="Equipment">Equipment</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="ocrNotes" class="form-label">Notes:</label>
+                                            <textarea class="form-control" id="ocrNotes" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PDF Upload Form -->
+                        <div id="pdfUploadForm" style="display: none;">
+                            <div class="file-upload mb-3">
+                                <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
+                                <label for="pdfFile" class="d-block">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <h5>Upload Receipt/Invoice PDF</h5>
+                                    <p class="text-muted">PDF files only</p>
+                                </label>
+                            </div>
+                            
+                            <div id="pdfProcessing" style="display: none;">
+                                <div class="spinner-container">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Extracted Text:</label>
+                                    <textarea class="form-control" id="extractedTextPdf" rows="5" readonly></textarea>
+                                </div>
+                                <div class="alert alert-warning">
+                                    Please manually confirm extracted data
+                                </div>
+                                
+                                <!-- Transaction fields for confirmation -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Transaction Type:</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="pdfTransactionType" id="pdfIncomeType" value="Income" checked>
+                                                <label class="form-check-label" for="pdfIncomeType">Income</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="pdfTransactionType" id="pdfExpenseType" value="Expense">
+                                                <label class="form-check-label" for="pdfExpenseType">Expense</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="pdfTransactionId" class="form-label">Transaction ID:</label>
+                                            <input type="text" class="form-control" id="pdfTransactionId">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="pdfTransactionDate" class="form-label">Date:</label>
+                                            <input type="date" class="form-control" id="pdfTransactionDate">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="pdfVendorName" class="form-label">Vendor/Client Name:</label>
+                                            <input type="text" class="form-control" id="pdfVendorName">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="pdfAmount" class="form-label">Amount (₹):</label>
+                                            <input type="number" class="form-control" id="pdfAmount" min="0" step="0.01">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="pdfGstAmount" class="form-label">GST Amount (₹):</label>
+                                            <input type="number" class="form-control" id="pdfGstAmount" min="0" step="0.01">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="pdfCategory" class="form-label">Category:</label>
+                                            <select class="form-select" id="pdfCategory">
+                                                <option value="Sales">Sales</option>
+                                                <option value="Services">Services</option>
+                                                <option value="Materials">Materials</option>
+                                                <option value="Utilities">Utilities</option>
+                                                <option value="Rent">Rent</option>
+                                                <option value="Equipment">Equipment</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="pdfNotes" class="form-label">Notes:</label>
+                                            <textarea class="form-control" id="pdfNotes" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button class="btn btn-primary btn-lg" id="saveTransactionBtn">
+                                <i class="fas fa-save me-2"></i>Save Transaction
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Success Message and Financial Update -->
+                <div id="transactionSuccess" class="card mt-4 transaction-success" style="display: none;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Transaction Saved Successfully!</h5>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Updated Financial Position</h5>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="metric-card income-metric">
+                                    <h6>Total Income</h6>
+                                    <div class="metric-value" id="totalIncome">₹0.00</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card expense-metric">
+                                    <h6>Total Expenses</h6>
+                                    <div class="metric-value" id="totalExpense">₹0.00</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card net-metric">
+                                    <h6>Current Net Profit/Loss</h6>
+                                    <div class="metric-value" id="netProfit">₹0.00</div>
+                                    <small class="text-muted">Positive = Profit, Negative = Loss</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h6>Income vs Expense Trend</h6>
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- View Transactions Section -->
+            <div id="view-transactions" class="content-section" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-list"></i>All Transactions</h2>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="transaction-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Date</th>
+                                        <th>Vendor/Client</th>
+                                        <th>Amount</th>
+                                        <th>GST</th>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Notes</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTableBody">
+                                    <!-- Transactions will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="metric-card">
+                            <h6>Total Transactions</h6>
+                            <div class="metric-value" id="totalTransactions">0</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card income-metric">
+                            <h6>Total Income</h6>
+                            <div class="metric-value" id="viewTotalIncome">₹0.00</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metric-card expense-metric">
+                            <h6>Total Expenses</h6>
+                            <div class="metric-value" id="viewTotalExpense">₹0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Financial Reports Section -->
+            <div id="financial-reports" class="content-section" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-chart-pie"></i>Advanced Financial Reports</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Report Parameters</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="endDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" id="generateReportBtn">
+                                <i class="fas fa-chart-bar me-2"></i>Generate Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="reportResults" style="display: none;">
+                    <!-- Tabs for different chart types -->
+                    <ul class="nav nav-tabs mt-4" id="reportTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="income-expense-tab" data-bs-toggle="tab" data-bs-target="#income-expense" type="button" role="tab">Income vs Expenses</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="daily-trends-tab" data-bs-toggle="tab" data-bs-target="#daily-trends" type="button" role="tab">Daily Trends</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="category-breakdown-tab" data-bs-toggle="tab" data-bs-target="#category-breakdown" type="button" role="tab">Category Breakdown</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="reportTabsContent">
+                        <div class="tab-pane fade show active" id="income-expense" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="chart-container">
+                                        <canvas id="pieChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h5 class="mb-3">Key Metrics</h5>
+                                    
+                                    <div class="metric-card mb-3">
+                                        <h6>Net Profit</h6>
+                                        <div class="metric-value" id="netProfitMetric">₹0.00</div>
+                                    </div>
+                                    
+                                    <div class="metric-card income-metric mb-3">
+                                        <h6>Avg Income</h6>
+                                        <div class="metric-value" id="avgIncomeMetric">₹0.00</div>
+                                    </div>
+                                    
+                                    <div class="metric-card expense-metric">
+                                        <h6>Avg Expense</h6>
+                                        <div class="metric-value" id="avgExpenseMetric">₹0.00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="daily-trends" role="tabpanel">
+                            <div class="chart-container mb-4">
+                                <canvas id="dailyBarChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="trendLineChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="category-breakdown" role="tabpanel">
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Transaction Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="transaction-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Date</th>
+                                            <th>Vendor/Client</th>
+                                            <th>Amount</th>
+                                            <th>GST</th>
+                                            <th>Type</th>
+                                            <th>Category</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reportTransactionsTableBody">
+                                        <!-- Report transactions will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section" style="display: none;">
+                <h2 class="section-title"><i class="fas fa-tachometer-alt"></i>Financial Dashboard</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Real-Time Financial Position</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card">
+                                    <h6>This Week</h6>
+                                    <div class="metric-value" id="weekNet">₹0.00</div>
+                                    <small class="text-muted" id="weekIncome">₹0.00 income</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card">
+                                    <h6>This Month</h6>
+                                    <div class="metric-value" id="monthNet">₹0.00</div>
+                                    <small class="text-muted" id="monthExpense">₹0.00 expenses</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card">
+                                    <h6>All Time</h6>
+                                    <div class="metric-value" id="allTimeNet">₹0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="top-transaction-card">
+                            <h5>Top Income</h5>
+                            <div id="topIncomeList">
+                                <!-- Top income transactions will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="top-transaction-card">
+                            <h5>Top Expenses</h5>
+                            <div id="topExpenseList">
+                                <!-- Top expense transactions will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="dashboardCharts" class="mt-4">
+                    <!-- Tabs for different chart types -->
+                    <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="dashboard-income-expense-tab" data-bs-toggle="tab" data-bs-target="#dashboard-income-expense" type="button" role="tab">Income vs Expenses</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="dashboard-daily-trends-tab" data-bs-toggle="tab" data-bs-target="#dashboard-daily-trends" type="button" role="tab">Daily Trends</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="dashboard-category-breakdown-tab" data-bs-toggle="tab" data-bs-target="#dashboard-category-breakdown" type="button" role="tab">Category Breakdown</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="dashboardTabsContent">
+                        <div class="tab-pane fade show active" id="dashboard-income-expense" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="chart-container">
+                                        <canvas id="dashboardPieChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            <div class="metric-card">
+                                                <h6>Net Profit</h6>
+                                                <div class="metric-value" id="dashboardNetProfitMetric">₹0.00</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <div class="metric-card income-metric">
+                                                <h6>Avg Income</h6>
+                                                <div class="metric-value" id="dashboardAvgIncomeMetric">₹0.00</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="metric-card expense-metric">
+                                                <h6>Avg Expense</h6>
+                                                <div class="metric-value" id="dashboardAvgExpenseMetric">₹0.00</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="dashboard-daily-trends" role="tabpanel">
+                            <div class="chart-container mb-4">
+                                <canvas id="dashboardDailyBarChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="dashboardTrendLineChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="dashboard-category-breakdown" role="tabpanel">
+                            <div class="chart-container">
+                                <canvas id="dashboardCategoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Transaction Modal -->
+    <div class="modal fade" id="editTransactionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Transaction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTransactionForm">
+                        <input type="hidden" id="editTransactionId">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Transaction Type:</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="editTransactionType" id="editIncomeType" value="Income">
+                                        <label class="form-check-label" for="editIncomeType">Income</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="editTransactionType" id="editExpenseType" value="Expense">
+                                        <label class="form-check-label" for="editExpenseType">Expense</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="editTransactionDate" class="form-label">Date:</label>
+                                    <input type="date" class="form-control" id="editTransactionDate">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="editVendorName" class="form-label">Vendor/Client Name:</label>
+                                    <input type="text" class="form-control" id="editVendorName">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editAmount" class="form-label">Amount (₹):</label>
+                                    <input type="number" class="form-control" id="editAmount" min="0" step="0.01">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="editGstAmount" class="form-label">GST Amount (₹):</label>
+                                    <input type="number" class="form-control" id="editGstAmount" min="0" step="0.01">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="editCategory" class="form-label">Category:</label>
+                                    <select class="form-select" id="editCategory">
+                                        <option value="Sales">Sales</option>
+                                        <option value="Services">Services</option>
+                                        <option value="Materials">Materials</option>
+                                        <option value="Utilities">Utilities</option>
+                                        <option value="Rent">Rent</option>
+                                        <option value="Equipment">Equipment</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="editNotes" class="form-label">Notes:</label>
+                                    <textarea class="form-control" id="editNotes" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="updateTransactionBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Database simulation using localStorage
+        class Database {
+            constructor() {
+                this.transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                this.nextId = this.transactions.length > 0 
+                    ? Math.max(...this.transactions.map(t => t.id)) + 1 
+                    : 1;
+            }
+            
+            saveTransaction(transaction) {
+                transaction.id = this.nextId++;
+                this.transactions.push(transaction);
+                this.saveToStorage();
+                return transaction;
+            }
+            
+            getTransactions() {
+                return [...this.transactions].reverse();
+            }
+            
+            getTransactionById(id) {
+                return this.transactions.find(t => t.id === parseInt(id));
+            }
+            
+            updateTransaction(id, updatedData) {
+                const index = this.transactions.findIndex(t => t.id === parseInt(id));
+                if (index !== -1) {
+                    this.transactions[index] = { ...this.transactions[index], ...updatedData };
+                    this.saveToStorage();
+                    return true;
+                }
+                return false;
+            }
+            
+            deleteTransaction(id) {
+                const index = this.transactions.findIndex(t => t.id === parseInt(id));
+                if (index !== -1) {
+                    this.transactions.splice(index, 1);
+                    this.saveToStorage();
+                    return true;
+                }
+                return false;
+            }
+            
+            getFinancialData(periodDays = null) {
+                let filtered = this.transactions;
+                
+                if (periodDays) {
+                    const cutoffDate = new Date();
+                    cutoffDate.setDate(cutoffDate.getDate() - periodDays);
+                    filtered = filtered.filter(t => new Date(t.transaction_date) >= cutoffDate);
+                }
+                
+                const income = filtered
+                    .filter(t => t.transaction_type === 'Income')
+                    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                
+                const expense = filtered
+                    .filter(t => t.transaction_type === 'Expense')
+                    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                
+                return {
+                    income,
+                    expense,
+                    net: income - expense
+                };
+            }
+            
+            getTransactionsByDateRange(startDate, endDate) {
+                return this.transactions.filter(t => {
+                    const tDate = new Date(t.transaction_date);
+                    return tDate >= new Date(startDate) && tDate <= new Date(endDate);
+                });
+            }
+            
+            getTopTransactions(type, limit = 5) {
+                return [...this.transactions]
+                    .filter(t => t.transaction_type === type)
+                    .sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount))
+                    .slice(0, limit);
+            }
+            
+            getAverageAmount(type) {
+                const transactions = this.transactions.filter(t => t.transaction_type === type);
+                if (transactions.length === 0) return 0;
+                
+                const total = transactions.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                return total / transactions.length;
+            }
+            
+            getTrendData() {
+                // Group by date
+                const grouped = {};
+                this.transactions.forEach(t => {
+                    if (!grouped[t.transaction_date]) {
+                        grouped[t.transaction_date] = { income: 0, expense: 0 };
+                    }
+                    if (t.transaction_type === 'Income') {
+                        grouped[t.transaction_date].income += parseFloat(t.amount);
+                    } else {
+                        grouped[t.transaction_date].expense += parseFloat(t.amount);
+                    }
+                });
+                
+                // Sort by date
+                const sortedDates = Object.keys(grouped).sort();
+                
+                // Calculate cumulative values
+                let cumulativeIncome = 0;
+                let cumulativeExpense = 0;
+                
+                const trendData = sortedDates.map(date => {
+                    cumulativeIncome += grouped[date].income;
+                    cumulativeExpense += grouped[date].expense;
+                    return {
+                        date,
+                        income: cumulativeIncome,
+                        expense: cumulativeExpense
+                    };
+                });
+                
+                return {
+                    labels: sortedDates,
+                    income: trendData.map(d => d.income),
+                    expense: trendData.map(d => d.expense)
+                };
+            }
+            
+            getCategoryData() {
+                const categories = {};
+                this.transactions.forEach(t => {
+                    if (!categories[t.category]) {
+                        categories[t.category] = { income: 0, expense: 0 };
+                    }
+                    if (t.transaction_type === 'Income') {
+                        categories[t.category].income += parseFloat(t.amount);
+                    } else {
+                        categories[t.category].expense += parseFloat(t.amount);
+                    }
+                });
+                
+                return {
+                    labels: Object.keys(categories),
+                    income: Object.values(categories).map(c => c.income),
+                    expense: Object.values(categories).map(c => c.expense)
+                };
+            }
+            
+            saveToStorage() {
+                localStorage.setItem('transactions', JSON.stringify(this.transactions));
+            }
+        }
+
+        // Initialize the database
+        const db = new Database();
+        window.myCharts = []; // Store chart instances for resizing
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date as default for transaction date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transactionDate').value = today;
+            document.getElementById('ocrTransactionDate').value = today;
+            document.getElementById('pdfTransactionDate').value = today;
+            
+            // Set default date range for reports (last 30 days)
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            document.getElementById('startDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+            document.getElementById('endDate').value = today;
+            
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Toggle sidebar for mobile
+            document.getElementById('toggleSidebar').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.toggle('active');
+                document.getElementById('mainContent').classList.toggle('active');
+            });
+            
+            // Navigation handling
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active state
+                    document.querySelectorAll('.nav-link').forEach(navLink => {
+                        navLink.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Show the selected section
+                    const sectionId = this.getAttribute('data-section');
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    document.getElementById(sectionId).style.display = 'block';
+                    
+                    // Load data for the section if needed
+                    if (sectionId === 'view-transactions') {
+                        loadTransactions();
+                    } else if (sectionId === 'dashboard') {
+                        loadDashboard();
+                    }
+                });
+            });
+            
+            // Input method toggle
+            document.querySelectorAll('input[name="inputMethod"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    document.getElementById('manualEntryForm').style.display = 'none';
+                    document.getElementById('imageUploadForm').style.display = 'none';
+                    document.getElementById('pdfUploadForm').style.display = 'none';
+                    
+                    if (this.id === 'manualEntry') {
+                        document.getElementById('manualEntryForm').style.display = 'block';
+                    } else if (this.id === 'imageUpload') {
+                        document.getElementById('imageUploadForm').style.display = 'block';
+                    } else if (this.id === 'pdfUpload') {
+                        document.getElementById('pdfUploadForm').style.display = 'block';
+                    }
+                });
+            });
+            
+            // Image upload handling
+            document.getElementById('imageFile').addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    document.getElementById('imageProcessing').style.display = 'block';
+                    
+                    // Simulate OCR processing
+                    setTimeout(() => {
+                        document.getElementById('extractedTextImage').value = "Sample extracted text from image:\n\nVendor: ABC Corp\nDate: " + today + "\nAmount: ₹1,250.00\nGST: ₹125.00\nNotes: Office supplies purchase";
+                        document.getElementById('imageProcessing').querySelector('.spinner-container').style.display = 'none';
+                    }, 2000);
+                }
+            });
+            
+            // PDF upload handling
+            document.getElementById('pdfFile').addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    document.getElementById('pdfProcessing').style.display = 'block';
+                    
+                    // Simulate OCR processing
+                    setTimeout(() => {
+                        document.getElementById('extractedTextPdf').value = "Sample extracted text from PDF:\n\nVendor: XYZ Services\nDate: " + today + "\nAmount: ₹3,750.00\nGST: ₹375.00\nNotes: Consulting services for Q3";
+                        document.getElementById('pdfProcessing').querySelector('.spinner-container').style.display = 'none';
+                    }, 3000);
+                }
+            });
+            
+            // Save transaction
+            document.getElementById('saveTransactionBtn').addEventListener('click', function() {
+                // Get the transaction data
+                const transactionData = {
+                    transaction_id: document.getElementById('transactionId').value,
+                    transaction_date: document.getElementById('transactionDate').value,
+                    vendor_name: document.getElementById('vendorName').value,
+                    amount: parseFloat(document.getElementById('amount').value),
+                    gst_amount: parseFloat(document.getElementById('gstAmount').value),
+                    transaction_type: document.querySelector('input[name="transactionType"]:checked').value,
+                    category: document.getElementById('category').value,
+                    notes: document.getElementById('notes').value
+                };
+                
+                // Validate required fields
+                if (!transactionData.transaction_id || !transactionData.vendor_name || isNaN(transactionData.amount)) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                // Save to database
+                const savedTransaction = db.saveTransaction(transactionData);
+                
+                if (savedTransaction) {
+                    // Show success message
+                    document.getElementById('transactionSuccess').style.display = 'block';
+                    
+                    // Update financial metrics
+                    const totals = db.getFinancialData();
+                    document.getElementById('totalIncome').textContent = `₹${totals.income.toFixed(2)}`;
+                    document.getElementById('totalExpense').textContent = `₹${totals.expense.toFixed(2)}`;
+                    document.getElementById('netProfit').textContent = `₹${totals.net.toFixed(2)}`;
+                    
+                    // Create trend chart
+                    const trendData = db.getTrendData();
+                    createTrendChart(trendData);
+                    
+                    // Reset form
+                    document.getElementById('transactionId').value = '';
+                    document.getElementById('vendorName').value = '';
+                    document.getElementById('amount').value = '';
+                    document.getElementById('gstAmount').value = '';
+                    document.getElementById('notes').value = '';
+                } else {
+                    alert('Error saving transaction');
+                }
+            });
+            
+            // Generate report
+            document.getElementById('generateReportBtn').addEventListener('click', function() {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                const transactions = db.getTransactionsByDateRange(startDate, endDate);
+                
+                if (transactions.length === 0) {
+                    alert('No transactions found in the selected period');
+                    return;
+                }
+                
+                document.getElementById('reportResults').style.display = 'block';
+                
+                // Calculate metrics
+                const income = transactions
+                    .filter(t => t.transaction_type === 'Income')
+                    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                
+                const expense = transactions
+                    .filter(t => t.transaction_type === 'Expense')
+                    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                
+                const netProfit = income - expense;
+                const avgIncome = income / transactions.filter(t => t.transaction_type === 'Income').length || 0;
+                const avgExpense = expense / transactions.filter(t => t.transaction_type === 'Expense').length || 0;
+                
+                // Update metrics
+                document.getElementById('netProfitMetric').textContent = `₹${netProfit.toFixed(2)}`;
+                document.getElementById('avgIncomeMetric').textContent = `₹${avgIncome.toFixed(2)}`;
+                document.getElementById('avgExpenseMetric').textContent = `₹${avgExpense.toFixed(2)}`;
+                
+                // Create charts
+                createPieChart(income, expense);
+                
+                // Group by date for daily trends
+                const dailyData = {};
+                transactions.forEach(t => {
+                    if (!dailyData[t.transaction_date]) {
+                        dailyData[t.transaction_date] = { income: 0, expense: 0 };
+                    }
+                    if (t.transaction_type === 'Income') {
+                        dailyData[t.transaction_date].income += parseFloat(t.amount);
+                    } else {
+                        dailyData[t.transaction_date].expense += parseFloat(t.amount);
+                    }
+                });
+                
+                const dailyLabels = Object.keys(dailyData).sort();
+                const dailyIncome = dailyLabels.map(date => dailyData[date].income);
+                const dailyExpense = dailyLabels.map(date => dailyData[date].expense);
+                
+                createDailyBarChart({
+                    labels: dailyLabels,
+                    income: dailyIncome,
+                    expense: dailyExpense
+                });
+                
+                // Calculate cumulative trend
+                let cumulativeIncome = 0;
+                let cumulativeExpense = 0;
+                
+                const trendData = dailyLabels.map(date => {
+                    cumulativeIncome += dailyData[date].income;
+                    cumulativeExpense += dailyData[date].expense;
+                    return {
+                        income: cumulativeIncome,
+                        expense: cumulativeExpense
+                    };
+                });
+                
+                createTrendLineChart({
+                    labels: dailyLabels,
+                    income: trendData.map(d => d.income),
+                    expense: trendData.map(d => d.expense)
+                });
+                
+                // Group by category
+                const categoryData = {};
+                transactions.forEach(t => {
+                    if (!categoryData[t.category]) {
+                        categoryData[t.category] = { income: 0, expense: 0 };
+                    }
+                    if (t.transaction_type === 'Income') {
+                        categoryData[t.category].income += parseFloat(t.amount);
+                    } else {
+                        categoryData[t.category].expense += parseFloat(t.amount);
+                    }
+                });
+                
+                createCategoryChart({
+                    labels: Object.keys(categoryData),
+                    income: Object.values(categoryData).map(c => c.income),
+                    expense: Object.values(categoryData).map(c => c.expense)
+                });
+                
+                // Load transactions
+                loadReportTransactions(transactions);
+            });
+            
+            // Load transactions
+            function loadTransactions() {
+                const transactions = db.getTransactions();
+                const tableBody = document.getElementById('transactionsTableBody');
+                tableBody.innerHTML = '';
+                
+                transactions.forEach(txn => {
+                    const row = document.createElement('tr');
+                    row.className = txn.transaction_type === 'Income' ? 'income-row' : 'expense-row';
+                    
+                    row.innerHTML = `
+                        <td>${txn.transaction_id}</td>
+                        <td>${txn.transaction_date}</td>
+                        <td>${txn.vendor_name}</td>
+                        <td>₹${parseFloat(txn.amount).toFixed(2)}</td>
+                        <td>₹${parseFloat(txn.gst_amount).toFixed(2)}</td>
+                        <td>${txn.transaction_type}</td>
+                        <td>${txn.category}</td>
+                        <td>${txn.notes}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${txn.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${txn.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Add event listeners to edit and delete buttons
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const transactionId = this.getAttribute('data-id');
+                        editTransaction(transactionId);
+                    });
+                });
+                
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const transactionId = this.getAttribute('data-id');
+                        deleteTransaction(transactionId);
+                    });
+                });
+                
+                // Update summary metrics
+                const totals = db.getFinancialData();
+                document.getElementById('totalTransactions').textContent = transactions.length;
+                document.getElementById('viewTotalIncome').textContent = `₹${totals.income.toFixed(2)}`;
+                document.getElementById('viewTotalExpense').textContent = `₹${totals.expense.toFixed(2)}`;
+            }
+            
+            // Edit transaction
+            function editTransaction(transactionId) {
+                const transaction = db.getTransactionById(transactionId);
+                
+                if (transaction) {
+                    // Populate modal form
+                    document.getElementById('editTransactionId').value = transaction.id;
+                    document.getElementById(transaction.transaction_type === 'Income' ? 'editIncomeType' : 'editExpenseType').checked = true;
+                    document.getElementById('editTransactionDate').value = transaction.transaction_date;
+                    document.getElementById('editVendorName').value = transaction.vendor_name;
+                    document.getElementById('editAmount').value = transaction.amount;
+                    document.getElementById('editGstAmount').value = transaction.gst_amount;
+                    document.getElementById('editCategory').value = transaction.category;
+                    document.getElementById('editNotes').value = transaction.notes;
+                    
+                    // Show modal
+                    const modal = new bootstrap.Modal(document.getElementById('editTransactionModal'));
+                    modal.show();
+                } else {
+                    alert('Transaction not found');
+                }
+            }
+            
+            // Update transaction
+            document.getElementById('updateTransactionBtn').addEventListener('click', function() {
+                const transactionId = document.getElementById('editTransactionId').value;
+                const transactionData = {
+                    transaction_id: document.getElementById('editTransactionId').value,
+                    transaction_date: document.getElementById('editTransactionDate').value,
+                    vendor_name: document.getElementById('editVendorName').value,
+                    amount: parseFloat(document.getElementById('editAmount').value),
+                    gst_amount: parseFloat(document.getElementById('editGstAmount').value),
+                    transaction_type: document.querySelector('input[name="editTransactionType"]:checked').value,
+                    category: document.getElementById('editCategory').value,
+                    notes: document.getElementById('editNotes').value
+                };
+                
+                const success = db.updateTransaction(transactionId, transactionData);
+                
+                if (success) {
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editTransactionModal'));
+                    modal.hide();
+                    
+                    // Reload transactions
+                    loadTransactions();
+                    
+                    // Show success message
+                    alert('Transaction updated successfully');
+                } else {
+                    alert('Error updating transaction');
+                }
+            });
+            
+            // Delete transaction
+            function deleteTransaction(transactionId) {
+                if (confirm('Are you sure you want to delete this transaction?')) {
+                    const success = db.deleteTransaction(transactionId);
+                    
+                    if (success) {
+                        // Reload transactions
+                        loadTransactions();
+                        alert('Transaction deleted successfully');
+                    } else {
+                        alert('Error deleting transaction');
+                    }
+                }
+            }
+            
+            // Load dashboard
+            function loadDashboard() {
+                // Update metrics
+                const currentWeek = db.getFinancialData(7);
+                const currentMonth = db.getFinancialData(30);
+                const allTime = db.getFinancialData();
+                
+                document.getElementById('weekNet').textContent = `₹${currentWeek.net.toFixed(2)}`;
+                document.getElementById('weekIncome').textContent = `₹${currentWeek.income.toFixed(2)} income`;
+                document.getElementById('monthNet').textContent = `₹${currentMonth.net.toFixed(2)}`;
+                document.getElementById('monthExpense').textContent = `₹${currentMonth.expense.toFixed(2)} expenses`;
+                document.getElementById('allTimeNet').textContent = `₹${allTime.net.toFixed(2)}`;
+                
+                // Load top transactions
+                const topIncome = db.getTopTransactions('Income', 5);
+                const topExpense = db.getTopTransactions('Expense', 5);
+                
+                const topIncomeList = document.getElementById('topIncomeList');
+                topIncomeList.innerHTML = '';
+                
+                topIncome.forEach(txn => {
+                    const item = document.createElement('div');
+                    item.className = 'top-transaction-item';
+                    item.innerHTML = `
+                        <div>
+                            <div class="top-transaction-date">${txn.transaction_date}</div>
+                            <div>${txn.vendor_name}</div>
+                        </div>
+                        <div class="top-transaction-amount income-amount">₹${parseFloat(txn.amount).toFixed(2)}</div>
+                    `;
+                    topIncomeList.appendChild(item);
+                });
+                
+                const topExpenseList = document.getElementById('topExpenseList');
+                topExpenseList.innerHTML = '';
+                
+                topExpense.forEach(txn => {
+                    const item = document.createElement('div');
+                    item.className = 'top-transaction-item';
+                    item.innerHTML = `
+                        <div>
+                            <div class="top-transaction-date">${txn.transaction_date}</div>
+                            <div>${txn.vendor_name}</div>
+                        </div>
+                        <div class="top-transaction-amount expense-amount">₹${parseFloat(txn.amount).toFixed(2)}</div>
+                    `;
+                    topExpenseList.appendChild(item);
+                });
+                
+                // Update dashboard metrics
+                document.getElementById('dashboardNetProfitMetric').textContent = `₹${allTime.net.toFixed(2)}`;
+                document.getElementById('dashboardAvgIncomeMetric').textContent = `₹${db.getAverageAmount('Income').toFixed(2)}`;
+                document.getElementById('dashboardAvgExpenseMetric').textContent = `₹${db.getAverageAmount('Expense').toFixed(2)}`;
+                
+                // Create dashboard charts
+                createDashboardPieChart(allTime.income, allTime.expense);
+                
+                // Get trend data for dashboard
+                const trendData = db.getTrendData();
+                createDashboardDailyBarChart(trendData);
+                createDashboardTrendLineChart(trendData);
+                
+                // Get category data
+                const categoryData = db.getCategoryData();
+                createDashboardCategoryChart(categoryData);
+            }
+            
+            // Chart creation functions
+            function createTrendChart(data) {
+                const ctx = document.getElementById('trendChart').getContext('2d');
+                const chart = initializeChart(ctx, 'line', {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: data.income,
+                            borderColor: 'rgba(76, 201, 240, 1)',
+                            backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        },
+                        {
+                            label: 'Expenses',
+                            data: data.expense,
+                            borderColor: 'rgba(247, 37, 133, 1)',
+                            backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }
+                    ]
+                }, {
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Income vs Expense Trend'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                });
+            }
+            
+            function createPieChart(income, expense) {
+                const ctx = document.getElementById('pieChart').getContext('2d');
+                const chart = initializeChart(ctx, 'pie', {
+                    labels: ['Income', 'Expenses'],
+                    datasets: [{
+                        data: [income, expense],
+                        backgroundColor: [
+                            'rgba(76, 201, 240, 0.7)',
+                            'rgba(247, 37, 133, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(76, 201, 240, 1)',
+                            'rgba(247, 37, 133, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                }, {
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Income vs Expenses Distribution'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ₹${value.toFixed(2)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function createDailyBarChart(data) {
+                const ctx = document.getElementById('dailyBarChart').getContext('2d');
+                const chart = initializeChart(ctx, 'bar', {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: data.income,
+                            backgroundColor: 'rgba(76, 201, 240, 0.7)',
+                            borderColor: 'rgba(76, 201, 240, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Expenses',
+                            data: data.expense,
+                            backgroundColor: 'rgba(247, 37, 133, 0.7)',
+                            borderColor: 'rgba(247, 37, 133, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                }, {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Daily Transaction Trends'
+                        },
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                });
+            }
+            
+            function createTrendLineChart(data) {
+                const ctx = document.getElementById('trendLineChart').getContext('2d');
+                const chart = initializeChart(ctx, 'line', {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: data.income,
+                            borderColor: 'rgba(76, 201, 240, 1)',
+                            backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        },
+                        {
+                            label: 'Expenses',
+                            data: data.expense,
+                            borderColor: 'rgba(247, 37, 133, 1)',
+                            backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }
+                    ]
+                }, {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Cumulative Trend'
+                        },
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Amount (₹)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                });
+            }
+            
+            function createCategoryChart(data) {
+                const ctx = document.getElementById('categoryChart').getContext('2d');
+                const chart = initializeChart(ctx, 'bar', {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: data.income,
+                            backgroundColor: 'rgba(76, 201, 240, 0.7)',
+                            borderColor: 'rgba(76, 201, 240, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Expenses',
+                            data: data.expense,
+                            backgroundColor: 'rgba(247, 37, 133, 0.7)',
+                            borderColor: 'rgba(247, 37, 133, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                }, {
+                    indexAxis: 'y',
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Spending by Category'
+                        },
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹)'
+                            },
+                            beginAtZero: true
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    }
+                });
+            }
+            
+            function createDashboardPieChart(income, expense) {
+                const ctx = document.getElementById('dashboardPieChart').getContext('2d');
+                const chart = initializeChart(ctx, 'pie', {
+                    labels: ['Income', 'Expenses'],
+                    datasets: [{
+                        data: [income, expense],
+                        backgroundColor: [
+                            'rgba(76, 201, 240, 0.7)',
+                            'rgba(247, 37, 133, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(76, 201, 240, 1)',
+                            'rgba(247, 37, 133, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                }, {
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Income vs Expenses Distribution'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ₹${value.toFixed(2)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function createDashboardDailyBarChart(data) {
+                const ctx = document.getElementById('dashboardDailyBarChart').getContext('2d');
+                const chart = initializeChart(ctx, 'bar', {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: data.income,
+                            backgroundColor: 'rgba(76, 201, 240, 0.7)',
+                            borderColor: 'rgba(76, 201, 240, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Expenses',
+                            data: data.expense,
+                            backgroundColor: 'rgba(247, 37, 133, 0.7)',
+                            borderColor: 'rgba(247, 37, 133, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                }, {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Daily Transaction Trends'
+                        },
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                });
+            }
+            
+            function createDashboardTrendLineChart(data) {
+                const ctx = document.getElementById('dashboardTrendLineChart').getContext('2d');
+                const chart = initializeChart(ctx, 'line', {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: data.income,
+                            borderColor: 'rgba(76, 201, 240, 1)',
+                            backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        },
+                        {
+                            label: 'Expenses',
+                            data: data.expense,
+                            borderColor: 'rgba(247, 37, 133, 1)',
+                            backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }
+                    ]
+                }, {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Cumulative Trend'
+                        },
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Amount (₹)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                });
+            }
+            
+            function createDashboardCategoryChart(data) {
+                const ctx = document.getElementById('dashboardCategoryChart').getContext('2d');
+                const chart = initializeChart(ctx, 'bar', {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: data.income,
+                            backgroundColor: 'rgba(76, 201, 240, 0.7)',
+                            borderColor: 'rgba(76, 201, 240, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Expenses',
+                            data: data.expense,
+                            backgroundColor: 'rgba(247, 37, 133, 0.7)',
+                            borderColor: 'rgba(247, 37, 133, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                }, {
+                    indexAxis: 'y',
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Spending by Category'
+                        },
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Amount (₹)'
+                            },
+                            beginAtZero: true
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    }
+                });
+            }
+            
+            function initializeChart(ctx, type, data, options) {
+                options = options || {};
+                options.responsive = true;
+                options.maintainAspectRatio = false;
+                
+                const chart = new Chart(ctx, {
+                    type: type,
+                    data: data,
+                    options: options
+                });
+                
+                // Store charts for resizing
+                window.myCharts.push(chart);
+                return chart;
+            }
+            
+            function loadReportTransactions(transactions) {
+                const tableBody = document.getElementById('reportTransactionsTableBody');
+                tableBody.innerHTML = '';
+                
+                transactions.forEach(txn => {
+                    const row = document.createElement('tr');
+                    row.className = txn.transaction_type === 'Income' ? 'income-row' : 'expense-row';
+                    
+                    row.innerHTML = `
+                        <td>${txn.transaction_id}</td>
+                        <td>${txn.transaction_date}</td>
+                        <td>${txn.vendor_name}</td>
+                        <td>₹${parseFloat(txn.amount).toFixed(2)}</td>
+                        <td>₹${parseFloat(txn.gst_amount).toFixed(2)}</td>
+                        <td>${txn.transaction_type}</td>
+                        <td>${txn.category}</td>
+                        <td>${txn.notes}</td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Handle window resize for charts
+            window.addEventListener('resize', function() {
+                window.myCharts.forEach(chart => {
+                    chart.resize();
+                });
+            });
+            
+            // Load initial data
+            loadTransactions();
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>
